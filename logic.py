@@ -2,41 +2,30 @@
 # or output happens here. The logic in this file
 # should be unit-testable.
 
+# logic.py
 
-def make_empty_board():
-    return [
-        [None, None, None],
-        [None, None, None],
-        [None, None, None],
-    ]
+class Player:
+    def __init__(self, marker):
+        self.marker = marker
 
+    def make_move(self, board):
+        raise NotImplementedError("Subclasses must implement this method")
 
-def get_winner(board):
-    """Determines the winner of the given board.
-    Returns 'X', 'O', or None."""
-    for row in board:
-        if row[0] == row[1] == row[2] and row[0] is not None:
-            return row[0]
+class HumanPlayer(Player):
+    def make_move(self, board):
+        while True:
+            try:
+                row = int(input("Enter the row (0, 1, or 2): "))
+                col = int(input("Enter the column (0, 1, or 2): "))
+                if board[row][col] is None:
+                    return row, col
+                else:
+                    print("That cell is already taken. Try again.")
+            except (ValueError, IndexError):
+                print("Invalid input. Please enter valid row and column values.")
 
-    for col in range(3):
-        if board[0][col] == board[1][col] == board[2][col] and board[0][col] is not None:
-            return board[0][col]
+class BotPlayer(Player):
+    def make_move(self, board):
+        empty_cells = [(i, j) for i in range(3) for j in range(3) if board[i][j] is None]
+        return empty_cells[0] if empty_cells else None
 
-    if board[0][0] == board[1][1] == board[2][2] and board[0][0] is not None:
-        return board[0][0]
-    if board[0][2] == board[1][1] == board[2][0] and board[0][2] is not None:
-        return board[0][2]
-
-
-
-
-def other_player(player):
-    """Given the character for a player, returns the other player."""
-    if player == 'X':
-        return 'O'
-    elif player == 'O':
-        return 'X'
-    else:
-        raise ValueError("Invalid player character")
-    
- 
